@@ -1,0 +1,64 @@
+name: Build and release ZigRed firmware
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  integration:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish an integration-only release when its version changes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION=$(python3 -c 'import json;print(json.load(open("custom_components/zigred/manifest.json"))["version"])')
+          FIRMWARE_VERSION=$(python3 -c 'import json;print(json.load(open("firmware/version.json"))["version"])')
+          if [ "$VERSION" != "$FIRMWARE_VERSION" ] && ! gh release view "v$VERSION" >/dev/null 2>&1; then
+            gh release create "v$VERSION" --target "$GITHUB_SHA" --title "ZigRed $VERSION" --notes-file RELEASE_NOTES.md
+          fi
+  firmware:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: arduino/setup-arduino-cli@v2
+      - name: Install pinned toolchain
+        run: |
+          arduino-cli config init
+          arduino-cli core update-index --additional-urls https://espressif.github.io/arduino-esp32/package_esp32_index.json
+          arduino-cli core install esp32:esp32@3.3.2 --additional-urls https://espressif.github.io/arduino-esp32/package_esp32_index.json
+          mkdir -p "$HOME/Arduino/libraries"
+          git clone https://github.com/ATrappmann/PN5180-Library.git "$HOME/Arduino/libraries/PN5180"
+          git -C "$HOME/Arduino/libraries/PN5180" checkout cf61c3a21fd8930eee349cca5bb878fdd2f3d69b
+          python3 scripts/patch_pn5180.py "$HOME/Arduino/libraries/PN5180"
+      - name: Compile ESP32-H2 4 MB router
+        run: |
+          python3 scripts/package_firmware.py --prepare
+          arduino-cli compile --fqbn 'esp32:esp32:esp32h2:ZigbeeMode=zczr,PartitionScheme=zigbee_zczr,FlashSize=4M,CDCOnBoot=cdc' --output-dir build firmware/ZigRed_H2
+          python3 scripts/package_firmware.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ZigRed-ESP32H2-4MB
+          path: |
+            dist/zigred-h2-usb.bin
+            dist/zigred-h2.ota
+            dist/firmware.json
+      - name: Publish firmware when version changes
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION=$(python3 -c 'import json;print(json.load(open("firmware/version.json"))["version"])')
+          if gh release view "v$VERSION" >/dev/null 2>&1; then
+            echo 'Version already published. Increase firmware/version.json for a new update.'
+          else
+            gh release create "v$VERSION" dist/zigred-h2-usb.bin dist/zigred-h2.ota dist/firmware.json --target "$GITHUB_SHA" --title "ZigRed $VERSION" --notes-file RELEASE_NOTES.md
+          fi

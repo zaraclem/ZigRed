@@ -1,0 +1,7 @@
+{
+  "version": "0.5.0",
+  "hardware_version": 1,
+  "manufacturer_code": 65521,
+  "image_type": 23122,
+  "board": "esp32h2-devkitm-1-4mb"
+}

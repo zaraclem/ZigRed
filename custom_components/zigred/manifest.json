@@ -1,0 +1,17 @@
+{
+  "domain": "zigred",
+  "name": "ZigRed",
+  "codeowners": [
+    "@zaraclem"
+  ],
+  "config_flow": true,
+  "dependencies": [
+    "http",
+    "mqtt",
+    "panel_custom"
+  ],
+  "documentation": "https://github.com/zaraclem/ZigRed",
+  "issue_tracker": "https://github.com/zaraclem/ZigRed/issues",
+  "iot_class": "local_push",
+  "version": "0.5.0"
+}

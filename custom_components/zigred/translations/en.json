@@ -1,0 +1,36 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Link a paired reader",
+        "description": "Pair the reader in Zigbee2MQTT first and wait for its interview to finish. Enter the base topic to list real readers.",
+        "data": {
+          "base_topic": "Zigbee2MQTT base topic"
+        }
+      },
+      "reader": {
+        "title": "Choose the paired reader",
+        "description": "Select a physical reader by its IEEE Zigbee address. Names and UIDs are stored independently for each reader.",
+        "data": {
+          "reader": "Detected reader"
+        }
+      },
+      "workspace": {
+        "title": "Enable the ZigRed workspace",
+        "description": "Enable the sidebar page for USB flashing and converter installation before pairing a reader. This step creates no physical reader. Pair a real reader in Zigbee2MQTT, then use Add reader in the panel."
+      }
+    },
+    "error": {
+      "invalid_topic": "Enter an exact base topic without + or #.",
+      "no_readers": "No paired and interviewed ZigRed found. Pair it in Zigbee2MQTT first, then retry.",
+      "bridge_unavailable": "Device inventory unavailable. Check MQTT, base topic and Zigbee2MQTT."
+    },
+    "abort": {
+      "already_configured": "This reader is already configured.",
+      "reader_removed": "This reader is no longer paired. Search again.",
+      "bridge_unavailable": "Zigbee2MQTT did not respond. Search again.",
+      "reconfigure_successful": "Linked to the selected reader. Saved names and UIDs were preserved.",
+      "workspace_no_reconfigure": "Open ZigRed in the sidebar to manage the workspace. Use Add reader to link a device."
+    }
+  }
+}

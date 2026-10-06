@@ -1,0 +1,36 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Associer un vrai lecteur",
+        "description": "Appaire d’abord le lecteur dans Zigbee2MQTT, attends la fin de son identification, puis indique le sujet de base. ZigRed affichera les appareils reconnus. Aucun lecteur fictif ne sera créé.",
+        "data": {
+          "base_topic": "Sujet de base Zigbee2MQTT"
+        }
+      },
+      "reader": {
+        "title": "Choisir le lecteur appairé",
+        "description": "Chaque lecteur est identifié par son adresse Zigbee IEEE. Choisis celui à gérer ; ses noms et UID resteront propres à ce lecteur.",
+        "data": {
+          "reader": "Lecteur détecté"
+        }
+      },
+      "workspace": {
+        "title": "Activer l’espace ZigRed",
+        "description": "Active la page ZigRed dans le menu pour préparer le premier flash USB et installer le convertisseur. Aucun lecteur n’est créé à cette étape. Ensuite, appaire un vrai lecteur dans Zigbee2MQTT puis utilise Ajouter un lecteur dans la page."
+      }
+    },
+    "error": {
+      "invalid_topic": "Saisir un sujet de base sans + ni #.",
+      "no_readers": "Aucun ZigRed appairé et identifié sur ce Zigbee2MQTT. Appaire-le, attends la fin de l’identification, puis réessaie.",
+      "bridge_unavailable": "Liste Zigbee2MQTT inaccessible. Vérifie MQTT, le sujet de base et que Zigbee2MQTT est démarré."
+    },
+    "abort": {
+      "already_configured": "Ce lecteur est déjà configuré.",
+      "reader_removed": "Ce lecteur a été retiré de Zigbee2MQTT. Relance la recherche.",
+      "bridge_unavailable": "Zigbee2MQTT ne répond pas. Relance la recherche.",
+      "reconfigure_successful": "La configuration est maintenant associée au lecteur sélectionné. Les attributions ont été conservées.",
+      "workspace_no_reconfigure": "L’espace se règle depuis la page ZigRed du menu. Utilise Ajouter un lecteur pour associer un appareil."
+    }
+  }
+}
