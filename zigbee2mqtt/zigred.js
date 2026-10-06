@@ -57,27 +57,27 @@ module.exports = {
     toZigbee: [{
         key: ['led_config', 'badge_feedback'],
         convertGet: async (entity, key) => {
-            if (key === 'led_config') await entity.read('thzReader', ['ledConfig']);
+            if (key === 'led_config') await entity.read(0xff00, [3]);
         },
         convertSet: async (entity, key, value) => {
             if (typeof value !== 'string') throw new Error('Expected a string');
             if (key === 'led_config') {
                 if (!/^01[0-9A-Fa-f]{70}$/.test(value)) throw new Error('Invalid LED settings');
-                await entity.write('thzReader', {ledConfig: value});
-                const result = await entity.read('thzReader', ['ledConfig']);
+                await entity.write(0xff00, {3: {value, type: Zcl.DataType.CHAR_STR}});
+                const result = await entity.read(0xff00, [3]);
                 return {state: {led_config: asString(result.ledConfig ?? result[3])}};
             }
             if (!/^(?:A:(?:[0-9A-F]{8}|[0-9A-F]{14})|V:[0-9A-F]{16})\|(authorized|denied|unknown)$/.test(value)) {
                 throw new Error('Invalid badge verdict');
             }
-            await entity.write('thzReader', {badgeFeedback: value});
+            await entity.write(0xff00, {4: {value, type: Zcl.DataType.CHAR_STR}});
         },
     }],
     configure: async (device) => {
         const endpoint = device.getEndpoint(1);
         const version = await endpoint.read('thzReader', ['firmwareVersion', 'otaCapable']);
         if ((version.firmwareVersion ?? version[1]) >= 0x00050000) {
-            await endpoint.read('thzReader', ['ledConfig', 'ledCapable']);
+            await endpoint.read(0xff00, [3, 5]);
         }
     },
     exposes: [

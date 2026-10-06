@@ -1,3 +1,7 @@
+# 0.5.1
+
+Corrige les commandes LED après une mise à jour du convertisseur Zigbee2MQTT : les attributs sont adressés par numéro pour éviter une ancienne définition en mémoire. Aucun nouveau flash firmware requis si le lecteur est déjà en 0.5.0.
+
 # ZigRed 0.5.0 â€” Voyant configurable par lecteur
 
 - Page LED par lecteur : couleurs, activation, clignotement, luminositÃ© et durÃ©e du rÃ©sultat.
