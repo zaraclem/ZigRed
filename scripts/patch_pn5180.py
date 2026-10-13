@@ -20,12 +20,13 @@ def replace_once(old, new):
 
 declarations = declarations.replace('  void begin();', '''  bool hasTransportError() const { return transportFailed; }
   void begin();''')
-declarations = declarations.replace('  bool transceiveCommand(', '''  bool transportFailed = false;
+declarations = declarations.replace('  bool transceiveCommand(', '''  uint8_t diagnosticCommand = 0xff, diagnosticParameter = 0xff;
+  bool transportFailed = false;
   bool waitBusy(uint8_t level, const char *stage);
   bool waitIRQ(uint32_t mask, const char *stage);
   bool transceiveCommand(''')
 replace_once('void PN5180::begin() {', 'void PN5180::begin() {\n  transportFailed = false;')
-replace_once('SPISettings(7000000, MSBFIRST, SPI_MODE0)', 'SPISettings(1000000, MSBFIRST, SPI_MODE0)')
+# Keep the Filament Reader SPI settings: 7 MHz, mode 0.
 
 # Preserve transaction cleanup and expose failures to the protocol callers.
 import re
@@ -48,9 +49,11 @@ helpers = '''bool PN5180::waitBusy(uint8_t level, const char *stage) {
       transportFailed = true;
       Serial.printf("PN5180 timeout: %s; BUSY=%d expected=%d RST=%d\\n",
                     stage, digitalRead(PN5180_BUSY), level, digitalRead(PN5180_RST));
+      Serial.printf("PN5180 SPI: command=0x%02X parameter=0x%02X NSS=%d\\n",
+                    diagnosticCommand, diagnosticParameter, digitalRead(PN5180_NSS));
       return false;
     }
-    delay(1);
+    delayMicroseconds(50);
   }
   return true;
 }
@@ -88,7 +91,7 @@ bool PN5180::waitIRQ(uint32_t mask, const char *stage) {
 
 '''
 replace_once('bool PN5180::transceiveCommand(uint8_t *sendBuffer, size_t sendBufferLen, uint8_t *recvBuffer, size_t recvBufferLen) {',
-             helpers + 'bool PN5180::transceiveCommand(uint8_t *sendBuffer, size_t sendBufferLen, uint8_t *recvBuffer, size_t recvBufferLen) {\n  if (transportFailed) return false;')
+             helpers + 'bool PN5180::transceiveCommand(uint8_t *sendBuffer, size_t sendBufferLen, uint8_t *recvBuffer, size_t recvBufferLen) {\n  if (transportFailed) return false;\n  diagnosticCommand = sendBufferLen ? sendBuffer[0] : 0xff;\n  diagnosticParameter = sendBufferLen > 1 ? sendBuffer[1] : 0xff;')
 waits = [
  ('while (LOW != digitalRead(PN5180_BUSY)); // wait until busy is low', 'if (!waitBusy(LOW, "before command")) return false;'),
  ('while(HIGH != digitalRead(PN5180_BUSY));  // wait until BUSY is high', 'if (!waitBusy(HIGH, "command accepted")) return false;'),
@@ -135,4 +138,4 @@ for filename in ('PN5180ISO14443.cpp', 'PN5180ISO15693.cpp'):
             raise RuntimeError('Pinned ISO15693 receive loop differs')
         protocol = protocol.replace(old, new)
     protocol_path.write_text(protocol, encoding='utf-8')
-print('PN5180: bounded BUSY/IRQ waits, propagated errors, SPI 1 MHz')
+print('PN5180: bounded BUSY/IRQ waits, propagated errors, SPI 7 MHz, BUSY polling 50 us')

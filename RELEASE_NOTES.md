@@ -1,6 +1,12 @@
+# 0.5.2
+
+Patch PN5180 basÃ© sur le pilote Filament Reader : SPI 7 MHz et interrogation BUSY toutes les 50 microsecondes. Les dÃ©lais maximaux et la rÃ©cupÃ©ration aprÃ¨s erreur restent actifs. Le log indique dÃ©sormais la commande SPI et son premier paramÃ¨tre en cas de blocage.
+
+Mise Ã  jour du firmware nÃ©cessaire. La compilation ne confirme pas la rÃ©solution sur le matÃ©riel. Comparer avec le deuxiÃ¨me PN5180 et des fils courts. Flash USB sans effacement complet pour conserver lâ€™appairage Zigbee.
+
 # 0.5.1
 
-Corrige les commandes LED après une mise à jour du convertisseur Zigbee2MQTT : les attributs sont adressés par numéro pour éviter une ancienne définition en mémoire. Aucun nouveau flash firmware requis si le lecteur est déjà en 0.5.0.
+Corrige les commandes LED aprï¿½s une mise ï¿½ jour du convertisseur Zigbee2MQTT : les attributs sont adressï¿½s par numï¿½ro pour ï¿½viter une ancienne dï¿½finition en mï¿½moire. Aucun nouveau flash firmware requis si le lecteur est dï¿½jï¿½ en 0.5.0.
 
 # ZigRed 0.5.0 â€” Voyant configurable par lecteur
 
