@@ -1,0 +1,33 @@
+name: Build standalone H2 NFC diagnostic
+on:
+  push:
+    branches: [main]
+    paths: ['diagnostics/**', '.github/workflows/diagnostic.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  diagnostic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: arduino/setup-arduino-cli@v2
+      - name: Install pinned ESP32-H2 core
+        run: |
+          arduino-cli config init
+          arduino-cli core update-index --additional-urls https://espressif.github.io/arduino-esp32/package_esp32_index.json
+          arduino-cli core install esp32:esp32@3.3.2 --additional-urls https://espressif.github.io/arduino-esp32/package_esp32_index.json
+      - name: Build diagnostic without Zigbee
+        run: |
+          arduino-cli compile --fqbn 'esp32:esp32:esp32h2:FlashSize=4M,CDCOnBoot=cdc' --output-dir diagnostic-build diagnostics/ZigRed_Diagnostic
+          cp diagnostic-build/ZigRed_Diagnostic.ino.merged.bin zigred-h2-diagnostic-usb.bin
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ZigRed-H2-diagnostic
+          path: zigred-h2-diagnostic-usb.bin
+      - name: Publish diagnostic as prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="diagnostic-${GITHUB_SHA:0:7}"
+          gh release create "$TAG" zigred-h2-diagnostic-usb.bin --target "$GITHUB_SHA" --prerelease --title 'Diagnostic H2 NFC seul' --notes-file diagnostics/README.md
