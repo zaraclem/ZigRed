@@ -1,10 +1,10 @@
 # Diagnostic PN5180 sur ESP32-H2
 
 Firmware temporaire pour ESP32-H2 4 Mo avec les GPIO habituels de ZigRed.
-Utilise uniquement Arduino et SPI : aucune bibliothèque PN5180, aucun Zigbee,
+Diagnostic 2 : utilise Arduino et les GPIO directement : aucune bibliothèque PN5180, aucun Zigbee,
 aucune LED et aucun champ RF. Il ne lit donc pas les badges.
 
-Il compare 100 kHz, 1 MHz et 7 MHz, avec deux modes de fin de réponse SPI,
+Il compare des demi-périodes minimales de 2 et 10 microsecondes, avec deux modes de fin de réponse SPI,
 et affiche les octets reçus ainsi que la stabilité de deux lectures EEPROM.
 Une lecture stable est un indice de communication ; elle ne valide pas la lecture NFC.
 

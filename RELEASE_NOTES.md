@@ -1,3 +1,9 @@
+# 0.5.3
+
+Nouveau transport PN5180 ZigRed par GPIO : SPI mode 0 MSB-first généré directement, sans contrôleur SPI matériel Arduino. Les protections BUSY/IRQ et les protocoles ISO14443A/ISO15693 existants sont conservés. Le diagnostic 2 utilise le même transport GPIO sans Zigbee/RF/LED.
+
+Ce changement vise à isoler la panne SPI persistante. Une compilation réussie ne confirme pas son efficacité sur le montage physique. Les UID, réglages LED et commandes OTA restent compatibles. Source du transport : drivers/zigred_pn5180/ZigRedPNTransport.h. Les routines de protocole amont restent sous LGPL-2.1-or-later.
+
 # 0.5.2
 
 Patch PN5180 basé sur le pilote Filament Reader : SPI 7 MHz et interrogation BUSY toutes les 50 microsecondes. Les délais maximaux et la récupération après erreur restent actifs. Le log indique désormais la commande SPI et son premier paramètre en cas de blocage.

@@ -134,8 +134,8 @@ static String readTag() {
 }
 static void initializeNFC() {
     nfcStarted=millis();nfcBusy=true;
-    Serial.println("PN5180 stage: initialize SPI (7 MHz; BUSY polling 50 us)");
-    SPI.begin(PIN_SCK,PIN_MISO,PIN_MOSI,PIN_NSS);
+    Serial.println("PN5180 stage: initialize GPIO SPI (mode 0; half-period >=2 us)");
+    // GPIO transport configured by each PN5180 begin().
     readerA.begin();readerV.begin();
     Serial.printf("PN5180 stage: reset; BUSY=%d\n",digitalRead(PIN_BUSY));
     readerA.reset();

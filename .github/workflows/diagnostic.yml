@@ -2,7 +2,7 @@ name: Build standalone H2 NFC diagnostic
 on:
   push:
     branches: [main]
-    paths: ['diagnostics/**', '.github/workflows/diagnostic.yml']
+    paths: ['diagnostics/**', 'drivers/**', '.github/workflows/diagnostic.yml']
   workflow_dispatch:
 permissions:
   contents: write
@@ -19,6 +19,7 @@ jobs:
           arduino-cli core install esp32:esp32@3.3.2 --additional-urls https://espressif.github.io/arduino-esp32/package_esp32_index.json
       - name: Build diagnostic without Zigbee
         run: |
+          cp drivers/zigred_pn5180/ZigRedPNTransport.h diagnostics/ZigRed_Diagnostic/
           arduino-cli compile --fqbn 'esp32:esp32:esp32h2:FlashSize=4M,CDCOnBoot=cdc' --output-dir diagnostic-build diagnostics/ZigRed_Diagnostic
           cp diagnostic-build/ZigRed_Diagnostic.ino.merged.bin zigred-h2-diagnostic-usb.bin
       - uses: actions/upload-artifact@v4
