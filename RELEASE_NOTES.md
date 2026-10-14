@@ -1,3 +1,9 @@
+# 0.5.4
+
+Retrait du badge : les réponses ISO14443A de longueur incorrecte et les checksums BCC invalides sont ignorés. Un UID doit être lu intégralement deux fois de suite avant envoi à HA et changement de verdict LED. Une lecture isolée au bord du champ ne devient plus un badge inconnu rouge. Les badges inconnus stables restent rouges ; les erreurs matérielles restent signalées.
+
+Le firmware normal reprend le SPI matériel de la version 0.5.2 utilisée sur le lecteur réparé. Le transport GPIO reste disponible dans les sources de diagnostic. Une mise à jour du lecteur est nécessaire ; HACS seul ne modifie pas le firmware.
+
 # 0.5.3
 
 Nouveau transport PN5180 ZigRed par GPIO : SPI mode 0 MSB-first généré directement, sans contrôleur SPI matériel Arduino. Les protections BUSY/IRQ et les protocoles ISO14443A/ISO15693 existants sont conservés. Le diagnostic 2 utilise le même transport GPIO sans Zigbee/RF/LED.

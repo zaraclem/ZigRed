@@ -144,7 +144,7 @@ async def async_setup_firmware(hass):
     hass.http.register_view(ReadersView(hass))
     await panel_custom.async_register_panel(hass, frontend_url_path='zigred',
         webcomponent_name='zigred-panel', sidebar_title='ZigRed', sidebar_icon='mdi:nfc',
-        module_url='/zigred_static/panel.js?v=0.5.3', require_admin=True)
+        module_url='/zigred_static/panel.js?v=0.5.4', require_admin=True)
     hass.data[DATA_FIRMWARE] = manager
     # GitHub availability must not delay or prevent the sidebar from loading.
     hass.async_create_task(manager.async_refresh())

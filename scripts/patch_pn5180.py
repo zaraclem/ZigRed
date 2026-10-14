@@ -122,6 +122,24 @@ for filename in ('PN5180ISO14443.cpp', 'PN5180ISO15693.cpp'):
     protocol_path = root / filename
     protocol = protocol_path.read_text(encoding='utf-8')
     protocol = protocol.replace('uint32_t rxStatus;', 'uint32_t rxStatus = 0;')
+    if filename == 'PN5180ISO14443.cpp':
+        # A withdrawing tag can leave a short/stale RX buffer. Never turn
+        # those bytes into an unknown UID and a red authorization verdict.
+        start_a = protocol.index('uint8_t PN5180ISO14443::activateTypeA(')
+        end_a = protocol.index('bool PN5180ISO14443::mifareBlockRead(', start_a)
+        activation = protocol[start_a:end_a]
+        activation, reads = re.subn(
+            r'if \(!readData\((2|5|1), ([^)]+)\)\)',
+            r'if (rxBytesReceived() != \1 || !readData(\1, \2))', activation)
+        if reads != 5:
+            raise RuntimeError(f'Expected 5 Type-A receive checks, found {reads}')
+        activation, checks = re.subn(
+            r'(if \(rxBytesReceived\(\) != 5 \|\| !readData\(5, cmd\+2\)\)\s*return 0;)',
+            r'\1\n    if ((cmd[2] ^ cmd[3] ^ cmd[4] ^ cmd[5]) != cmd[6]) return 0;', activation)
+        if checks != 2:
+            raise RuntimeError(f'Expected 2 anticollision BCC checks, found {checks}')
+        activation = activation.replace('uidLength = 7;', 'if (buffer[2] & 0x04) return 0; // unsupported third cascade\n        uidLength = 7;')
+        protocol = protocol[:start_a] + activation + protocol[end_a:]
     if filename == 'PN5180ISO15693.cpp':
         old = '  while (0 == (status & RX_IRQ_STAT)) {\n    delay(10);\n    status = getIRQStatus();\n  }'
         new = '''  uint32_t receiveStarted = millis();

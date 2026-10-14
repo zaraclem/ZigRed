@@ -134,8 +134,8 @@ static String readTag() {
 }
 static void initializeNFC() {
     nfcStarted=millis();nfcBusy=true;
-    Serial.println("PN5180 stage: initialize GPIO SPI (mode 0; half-period >=2 us)");
-    // GPIO transport configured by each PN5180 begin().
+    Serial.println("PN5180 stage: initialize SPI (7 MHz; validated UID frames)");
+    SPI.begin(PIN_SCK,PIN_MISO,PIN_MOSI,PIN_NSS);
     readerA.begin();readerV.begin();
     Serial.printf("PN5180 stage: reset; BUSY=%d\n",digitalRead(PIN_BUSY));
     readerA.reset();
@@ -172,6 +172,9 @@ void setup() {
     if(!Zigbee.begin(ZIGBEE_ROUTER)){startupFault=true;Serial.println("Zigbee initialization failed");}
 }
 void loop() {
+    static String candidateUid;
+    static uint8_t candidateReads=0;
+    static uint32_t candidateAt=0;
     static String lastUid;static uint32_t lastReport=0,lastVersionReport=0,lastNfcRetry=0;static bool wasConnected=false;
     zigbeeOnline=Zigbee.connected();
     persistLedSettings();
@@ -188,11 +191,23 @@ void loop() {
     String uid=readTag();
     nfcBusy=false;
     if(readerA.hasTransportError()||readerV.hasTransportError()){
+        candidateUid="";candidateReads=0;
         nfcReady=false;nfcFault=true;
         Serial.println("PN5180 transport failed during badge polling; retry in 10 s");
         delay(100);return;
     }
-    if(!uid.isEmpty())ledBadgeRead(uid);
+    if(uid.isEmpty()) {
+        candidateUid="";candidateReads=0;
+    } else {
+        // Require two consecutive complete readings before LED/HA feedback.
+        // An isolated UID near the edge of the field is never published.
+        if(uid==candidateUid&&uint32_t(millis()-candidateAt)<1000) {
+            if(candidateReads<2)++candidateReads;
+        } else {candidateUid=uid;candidateReads=1;}
+        candidateAt=millis();
+        if(candidateReads<2){delay(110);return;}
+        ledBadgeRead(uid);
+    }
     if(!uid.isEmpty()&&(uid!=lastUid||millis()-lastReport>=REPORT_MS)){
         bool sent=sendUid(uid);
         if(uid!=lastUid || !sent)Serial.printf("NFC UID %s; Zigbee report %s\n",uid.c_str(),sent?"queued":"FAILED");

@@ -39,7 +39,6 @@ jobs:
           git clone https://github.com/ATrappmann/PN5180-Library.git "$HOME/Arduino/libraries/PN5180"
           git -C "$HOME/Arduino/libraries/PN5180" checkout cf61c3a21fd8930eee349cca5bb878fdd2f3d69b
           python3 scripts/patch_pn5180.py "$HOME/Arduino/libraries/PN5180"
-          python3 scripts/use_gpio_pn5180.py "$HOME/Arduino/libraries/PN5180"
       - name: Compile ESP32-H2 4 MB router
         run: |
           python3 scripts/package_firmware.py --prepare
