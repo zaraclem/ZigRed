@@ -1,3 +1,11 @@
+# 0.5.6 — Listes dans les déclencheurs d’état
+
+Les capteurs Personne active et UID actif déclarent maintenant des états énumérés avec les personnes/UID propres au lecteur. Dans un déclencheur État, les champs De/Vers peuvent proposer ces listes. Les valeurs et identifiants des capteurs restent identiques ; aucun capteur par personne n’est créé.
+
+La page ZigRed ajoute Automatisations · personnes & UID et Automatiser ce lecteur, un lien vers l’appareil réellement créé par l’intégration ZigRed. Les déclencheurs personnalisés 0.5.5 sont attachés à cet appareil. Le choix de bibliothèque de schéma suit désormais celui de Home Assistant pour éviter de mélanger les implémentations de validation.
+
+Mettre à jour l’intégration sur le HA concerné et le redémarrer, puis rouvrir l’éditeur d’automatisation. Aucun flash firmware nécessaire. Aucun changement automatique n’est appliqué aux installations HA par cette publication.
+
 # 0.5.5 — Automatisations par personne
 
 Dans une automatisation, ajouter un déclencheur Appareil, sélectionner le lecteur ZigRed puis choisir : personne autorisée active, personne plus active, ou badge inconnu. Les deux premiers proposent une liste nom — UID propre au lecteur, ainsi que toutes les personnes autorisées. Le choix est conservé par UID après un renommage.

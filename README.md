@@ -327,3 +327,9 @@ Dans **Paramètres → Automatisations et scènes → Créer une automatisation 
 Le choix est mémorisé par UID : renommer une personne ne casse pas le déclencheur. Les noms et UID ne sont jamais partagés entre lecteurs. Rouvrir le sélecteur après ajout ou modification d’une personne pour rafraîchir les options. Les personnes désactivées sont signalées dans la liste mais ne déclenchent pas d’arrivée.
 
 Dans les actions, les modèles `{{ trigger.event.data.person }}` et `{{ trigger.event.data.uid }}` donnent le nom et l’UID de l’événement. Cette fonctionnalité demande seulement une mise à jour HACS et un redémarrage HA ; les capteurs existants gardent leurs valeurs et identifiants.
+
+### Listes dans un déclencheur État (0.5.6)
+
+Ajouter un déclencheur **État**, choisir l’entité **Personne active** du lecteur puis sélectionner un nom dans **Vers**. Pour travailler par identifiant stable, choisir **UID actif** et sélectionner l’UID dans **Vers**. Les listes sont propres au lecteur et sont rafraîchies après modification de ses personnes. Les états **Aucun** et **Badge inconnu** restent disponibles selon le capteur.
+
+Pour les déclencheurs Appareil personnalisés, ouvrir la page ZigRed, sélectionner le lecteur puis **Automatisations · personnes & UID → Automatiser ce lecteur**. Ce lien ouvre l’appareil portant les entités ZigRed et les déclencheurs de l’intégration.

@@ -1,4 +1,4 @@
-from homeassistant.components.sensor import SensorEntity
+from homeassistant.components.sensor import SensorEntity, SensorDeviceClass
 from homeassistant.core import callback
 from .const import DOMAIN
 
@@ -38,11 +38,18 @@ class ReaderSensor(SensorEntity):
 
 
 class CurrentPersonSensor(ReaderSensor):
+    _attr_device_class = SensorDeviceClass.ENUM
     _attr_name = 'Personne active'
     _attr_icon = 'mdi:account'
 
     def __init__(self, hub):
         super().__init__(hub, 'current_person')
+
+    @property
+    def options(self):
+        # HA uses enum options in its state trigger "From" / "To" lists.
+        return list(dict.fromkeys(['Aucun', 'Badge inconnu', *sorted(
+            set(self.hub.tags.values()), key=str.casefold), self.native_value]))
 
     @property
     def native_value(self):
@@ -53,11 +60,18 @@ class CurrentPersonSensor(ReaderSensor):
 
 
 class CurrentBadgeSensor(ReaderSensor):
+    _attr_device_class = SensorDeviceClass.ENUM
     _attr_name = 'UID actif'
     _attr_icon = 'mdi:nfc'
 
     def __init__(self, hub):
         super().__init__(hub, 'current_badge')
+
+    @property
+    def options(self):
+        # Keep a currently present unknown UID valid without advertising
+        # fabricated IDs; known reader-specific UIDs are always selectable.
+        return list(dict.fromkeys(['Aucun', *sorted(self.hub.tags), self.native_value]))
 
     @property
     def native_value(self):

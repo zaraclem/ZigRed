@@ -1,12 +1,13 @@
 """Device triggers with a live dropdown of this reader's people and UIDs."""
-try:
-    import probatio as vol
-except ImportError:
-    import voluptuous as vol
-
 from homeassistant.components.device_automation import (
     DEVICE_TRIGGER_BASE_SCHEMA, InvalidDeviceAutomationConfig,
 )
+# Match HA's schema implementation instead of selecting an unrelated package
+# that merely happens to be installed on the host.
+if type(DEVICE_TRIGGER_BASE_SCHEMA).__module__.startswith('probatio'):
+    import probatio as vol
+else:
+    import voluptuous as vol
 try:
     from homeassistant.components.homeassistant.triggers import event as event_trigger
 except ImportError:

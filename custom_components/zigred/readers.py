@@ -13,8 +13,11 @@ from .led import validate_settings, encode_settings
 
 def reader_data(hub):
     uid = hub.current_uid
+    device = dr.async_get(hub.hass).async_get_device(
+        identifiers={(DOMAIN, hub.entry.entry_id)})
     return {
         'entry_id': hub.entry.entry_id, 'name': hub.entry.title,
+        'ha_device_id': device.id if device else None,
         'topic': hub.entry.data['topic'], 'device_id': hub.device_id,
         'ieee_address': hub.ieee_address, 'paired': hub.paired,
         'converter_ready': hub.converter_ready,
