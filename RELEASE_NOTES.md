@@ -1,3 +1,13 @@
+# 0.5.5 — Automatisations par personne
+
+Dans une automatisation, ajouter un déclencheur Appareil, sélectionner le lecteur ZigRed puis choisir : personne autorisée active, personne plus active, ou badge inconnu. Les deux premiers proposent une liste nom — UID propre au lecteur, ainsi que toutes les personnes autorisées. Le choix est conservé par UID après un renommage.
+
+Une arrivée ne se répète pas à chaque heartbeat. Une personne désactivée ne déclenche pas une arrivée. La fin de présence correspond à l’expiration des lectures (environ 3 à 4 secondes), à une désactivation, suppression ou perte d’association. Le déclencheur badge inconnu ne vise pas les personnes connues désactivées. Les messages MQTT conservés et séquences répétées restent ignorés.
+
+Les actions peuvent lire trigger.event.data.person, uid, reader et device_id. Les attributions de chaque lecteur restent indépendantes. Après une modification des personnes, rouvrir le choix du déclencheur pour rafraîchir la liste.
+
+Mise à jour HACS et redémarrage HA uniquement. Aucun flash du lecteur, aucune modification des états et identifiants des entités existantes.
+
 # 0.5.4
 
 Retrait du badge : les réponses ISO14443A de longueur incorrecte et les checksums BCC invalides sont ignorés. Un UID doit être lu intégralement deux fois de suite avant envoi à HA et changement de verdict LED. Une lecture isolée au bord du champ ne devient plus un badge inconnu rouge. Les badges inconnus stables restent rouges ; les erreurs matérielles restent signalées.

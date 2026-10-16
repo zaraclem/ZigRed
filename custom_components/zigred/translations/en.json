@@ -32,5 +32,12 @@
       "reconfigure_successful": "Linked to the selected reader. Saved names and UIDs were preserved.",
       "workspace_no_reconfigure": "Open ZigRed in the sidebar to manage the workspace. Use Add reader to link a device."
     }
+  },
+  "device_automation": {
+    "trigger_type": {
+      "person_detected": "An enabled person becomes active on {device_name}",
+      "person_removed": "A person is no longer active on {device_name}",
+      "unknown_badge": "An unknown badge is detected on {device_name}"
+    }
   }
 }

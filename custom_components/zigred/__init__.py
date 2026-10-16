@@ -13,6 +13,7 @@ from homeassistant.helpers.storage import Store
 from .const import DOMAIN, PLATFORMS, EXPIRY_SECONDS
 from .discovery import paired_readers
 from .led import DEFAULTS, validate_settings, encode_settings
+from .automation import fire_badge_event
 from copy import deepcopy
 
 UID_RE = re.compile(r'^(?:A:(?:[0-9A-F]{8}|[0-9A-F]{14})|V:[0-9A-F]{16})$')
@@ -59,6 +60,7 @@ class ReaderHub:
         self.led_task = None
         self.led_signature = None
         self.led_last_config = 0
+        self.automation_present = {}
 
     def stored_data(self):
         return {'tags': self.tags, 'disabled': self.disabled, 'led': self.led_settings}
@@ -201,6 +203,16 @@ class ReaderHub:
 
     @callback
     def changed(self):
+        # Compare enabled, known presence only. Heartbeats and renames don't
+        # retrigger arrival; expiry, disable and unpair end active presence.
+        present = {uid: self.tags[uid] for uid in self.active
+                   if uid in self.tags and self.is_enabled(uid)} if self.paired else {}
+        previous = self.automation_present
+        self.automation_present = present
+        for uid in previous.keys() - present.keys():
+            fire_badge_event(self, 'person_removed', uid, previous[uid])
+        for uid in present.keys() - previous.keys():
+            fire_badge_event(self, 'person_detected', uid, present[uid])
         self.queue_led()
         for listener in tuple(self.listeners):
             listener()
@@ -246,6 +258,9 @@ class ReaderHub:
             return
         self.last_seq = seq
         self.last_uid = uid
+        fresh_arrival = uid not in self.active or monotonic() - self.active[uid] >= EXPIRY_SECONDS
+        if uid not in self.tags and fresh_arrival:
+            fire_badge_event(self, 'unknown_badge', uid)
         if self.enrolling and uid not in self.enroll_ignored and uid not in self.tags:
             self.enrolling = False
             self.enroll_ignored.clear()

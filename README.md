@@ -315,3 +315,15 @@ Les événements IRQ utilisés par le pilote sont activés explicitement. Avant 
 ### Correction des erreurs IRQ persistantes (0.4.8)
 
 Comparaison avec le pilote local de BambuNFCBridge : un événement de fin RF valide confirme la commande. La 0.4.7 pouvait rejeter une coupure RF achevée en présence d’une erreur sémantique antérieure. La 0.4.8 efface les événements avant chaque commande RF_ON/RF_OFF et vérifie d’abord son événement de fin. Les vrais refus et délais dépassés restent diagnostiqués. La pause entre lectures est de 110 ms. Le résultat doit être confirmé sur le lecteur réel.
+
+## Automatisations avec la liste des personnes (0.5.5)
+
+Dans **Paramètres → Automatisations et scènes → Créer une automatisation → Ajouter un déclencheur → Appareil**, choisir le lecteur **ZigRed**. Sélectionner le déclencheur ZigRed puis le nom et l’UID de la personne dans la liste, ou toutes les personnes autorisées.
+
+- **Personne autorisée active** : une fois quand le badge devient présent, sans répétition pendant son maintien.
+- **Personne plus active** : après expiration des lectures (environ 3 à 4 secondes), désactivation, suppression ou perte d’association.
+- **Badge inconnu** : un UID absent de la liste propre au lecteur ; une personne connue désactivée ne compte pas comme inconnue.
+
+Le choix est mémorisé par UID : renommer une personne ne casse pas le déclencheur. Les noms et UID ne sont jamais partagés entre lecteurs. Rouvrir le sélecteur après ajout ou modification d’une personne pour rafraîchir les options. Les personnes désactivées sont signalées dans la liste mais ne déclenchent pas d’arrivée.
+
+Dans les actions, les modèles `{{ trigger.event.data.person }}` et `{{ trigger.event.data.uid }}` donnent le nom et l’UID de l’événement. Cette fonctionnalité demande seulement une mise à jour HACS et un redémarrage HA ; les capteurs existants gardent leurs valeurs et identifiants.

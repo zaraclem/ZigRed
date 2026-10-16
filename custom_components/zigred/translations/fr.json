@@ -32,5 +32,12 @@
       "reconfigure_successful": "La configuration est maintenant associée au lecteur sélectionné. Les attributions ont été conservées.",
       "workspace_no_reconfigure": "L’espace se règle depuis la page ZigRed du menu. Utilise Ajouter un lecteur pour associer un appareil."
     }
+  },
+  "device_automation": {
+    "trigger_type": {
+      "person_detected": "Une personne autorisée devient active sur {device_name}",
+      "person_removed": "Une personne n’est plus active sur {device_name}",
+      "unknown_badge": "Un badge inconnu est détecté sur {device_name}"
+    }
   }
 }
